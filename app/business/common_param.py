@@ -2,6 +2,7 @@ from app.datatype.common_param import (
     CommonParam,
     GetCommonParamMdl,
     GetCommonParamListMdl,
+    CreateCommonParamMdl,
 )
 from app.initializer import g
 from app.utils import auth, db_async
@@ -38,3 +39,17 @@ class GetCommonParamListBiz(GetCommonParamListMdl):
                 items = [GetCommonParamMdl(**item).model_dump() for item in data]
                 return items, total
             return [], 0
+        
+class CreateCommonParamMdlBiz(CreateCommonParamMdl):
+
+    async def create(self):
+        async with g.db_async_session() as session:
+            return await db_async.create(
+                session=session,
+                model=CommonParam,
+                data={
+                    "name": self.name,
+                    "value": self.value,
+                },
+                filter_by={"name": self.name},
+            )

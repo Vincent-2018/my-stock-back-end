@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends
 from app.api.response import Response, response_docs
 from app.business.common_param import (
     GetCommonParamBiz,
-    GetCommonParamListBiz
+    GetCommonParamListBiz,
+    CreateCommonParamMdlBiz
 )
 from app.api.status import Status
 from app.initializer import g
@@ -60,3 +61,23 @@ async def get_list(
         g.logger.error(traceback.format_exc())
         return Response.failure(msg="common_param列表失败", error=e)
     return Response.success(data={"items": data, "total": total})
+
+# ------------------------------------
+@common_param_router.post(
+    path="/common_param",
+    summary="common_param创建",
+    responses=response_docs(data={
+        "id": "int",
+    }),
+)
+async def create(
+        common_param_biz: CreateCommonParamMdlBiz,
+):
+    try:
+        common_param_id = await common_param_biz.create()
+        if not common_param_id:
+            return Response.failure(msg="通用参数已存在", status=Status.RECORD_EXISTS_ERROR)
+    except Exception as e:
+        g.logger.error(traceback.format_exc())
+        return Response.failure(msg="common_param创建失败", error=e)
+    return Response.success(data={"id": common_param_id})
