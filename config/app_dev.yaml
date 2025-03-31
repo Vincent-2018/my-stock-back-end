@@ -1,0 +1,15 @@
+# 请根据自身需求修改
+appname: my-stock
+appversion: 1.0.0
+debug: true
+log_dir: ./log
+is_disable_docs: false
+# #
+snow_worker_id: 0
+snow_datacenter_id: 0
+redis_host:
+redis_port:
+redis_db:
+redis_password:
+db_url: mysql+pymysql://root:123456@127.0.0.0:3306/my_stock?charset=utf8mb4
+db_async_url: mysql+aiomysql://root:123456@0.0.0.0:3307/my_stock?charset=utf8mb4
