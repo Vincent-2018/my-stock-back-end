@@ -153,6 +153,6 @@ if __name__ == '__main__':
         port=8000,
         workers=3,
         log_level="debug",
-        is_reload=False,  # 适用于dev
+        is_reload=True,  # 适用于dev
         is_gunicorn=False,  # 不支持win
     )
