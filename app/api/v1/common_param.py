@@ -1,14 +1,15 @@
 import traceback
 
 from fastapi import APIRouter, Depends
-
 from app.api.response import Response, response_docs
 from app.business.common_param import (
     GetCommonParamBiz,
+    GetCommonParamListBiz
 )
 from app.api.status import Status
 from app.initializer import g
 from app.middleware.auth import JWTUser, get_current_user
+from loguru import logger
 
 common_param_router = APIRouter()
 _active = True  # 激活(若省略则默认True)
@@ -22,7 +23,7 @@ _active = True  # 激活(若省略则默认True)
     ),
 )
 async def get(
-        common_param_id: str,
+        common_param_id: int,
         current_user: JWTUser = Depends(get_current_user),  # 认证
 ):
     try:
@@ -34,3 +35,28 @@ async def get(
         g.logger.error(traceback.format_exc())
         return Response.failure(msg="common_param详情失败", error=e)
     return Response.success(data=data)
+
+@common_param_router.get(
+    path="/common_param",
+    summary="common_param列表",
+    responses=response_docs(
+        model=GetCommonParamListBiz,
+        is_listwrap=True,
+        listwrap_key="items",
+        listwrap_key_extra={
+            "total": "int",
+        },
+    ),
+)
+async def get_list(
+        page: int = 1,
+        size: int = 10,
+        current_user: JWTUser = Depends(get_current_user),
+):
+    try:
+        common_param_biz = GetCommonParamListBiz(page=page, size=size)
+        data, total = await common_param_biz.get_list()
+    except Exception as e:
+        g.logger.error(traceback.format_exc())
+        return Response.failure(msg="common_param列表失败", error=e)
+    return Response.success(data={"items": data, "total": total})
