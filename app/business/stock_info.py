@@ -3,6 +3,7 @@ from app.datatype.stock_info import (
     GetStockInfoMdl,
     GetStockInfoListMdl,
     CreateStockInfoMdl,
+    UpdateStockInfoMdl
 )
 from app.initializer import g
 from app.utils import auth, db_async
@@ -61,4 +62,28 @@ class CreateStockInfoBiz(CreateStockInfoMdl):
                     "value_usd": self.value_usd,
                     "value_cny": self.value_cny,
                 }
+            )
+
+
+class UpdateStockInfoBiz(UpdateStockInfoMdl):
+
+    async def update(self, stock_info_id: str):
+        async with g.db_async_session() as session:
+            return await db_async.update(
+                session=session,
+                model=StockInfo,
+                data=self.model_dump(),
+                filter_by={"id": stock_info_id},
+            )
+
+
+class DeleteStockInfoBiz:
+
+    @staticmethod
+    async def delete(stock_info_id: str):
+        async with g.db_async_session() as session:
+            return await db_async.delete(
+                session=session,
+                model=StockInfo,
+                filter_by={"id": stock_info_id},
             )

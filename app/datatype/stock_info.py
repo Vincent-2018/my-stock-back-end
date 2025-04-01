@@ -73,3 +73,16 @@ class CreateStockInfoMdl(BaseModel):
     stock_price: Decimal | None = Field(None)
     value_usd: Decimal | None = Field(None)
     value_cny: Decimal | None = Field(None)
+
+
+class UpdateStockInfoMdl(BaseModel):
+    type: str | None = Field(None)
+    grant_date: datetime | None = Field(None)
+    available_sell_quantity: int | None = Field(None)
+    stock_option_anchors_price: Decimal | None = Field(None)
+    stock_price: Decimal | None = Field(None)
+    value_usd: Decimal | None = Field(None)
+    value_cny: Decimal | None = Field(None)
+
+class DeleteStockInfoMdl(BaseModel):
+    pass

@@ -7,6 +7,8 @@ from app.business.stock_info import (
     GetStockInfoBiz,
     GetStockInfoListBiz,
     CreateStockInfoBiz,
+    UpdateStockInfoBiz,
+    DeleteStockInfoBiz
 )
 from app.api.status import Status
 from app.initializer import g
@@ -65,6 +67,7 @@ async def get_list(
         return Response.failure(msg="获取股票信息列表失败", error=e)
     return Response.success(data={"items": data, "total": total})
 
+
 @stock_info_router.post(
     path="/stock_info",
     summary="创建股票信息",
@@ -82,3 +85,42 @@ async def create(
         g.logger.error(traceback.format_exc())
         return Response.failure(msg="创建股票信息失败", error=e)
     return Response.success(data=data)
+
+
+@stock_info_router.put(
+    path="/stock_info/{stock_info_id}",
+    summary="更新股票信息",
+    responses=response_docs(model=UpdateStockInfoBiz),
+)
+async def update(
+    stock_info_id: str,
+    stock_info: UpdateStockInfoBiz,
+    current_user: JWTUser = Depends(get_current_user),
+):
+    try:
+        updated_ids = await stock_info.update(stock_info_id)
+        if not updated_ids:
+            return Response.failure(msg="未匹配到记录", status=Status.RECORD_NOT_EXIST_ERROR)
+    except Exception as e:
+        g.logger.error(traceback.format_exc())
+        return Response.failure(msg="更新股票信息失败", error=e)
+    return Response.success(data={"stock_info_id": stock_info_id})
+
+
+@stock_info_router.delete(
+    path="/stock_info/{stock_info_id}",
+    summary="删除股票信息",
+    responses=response_docs(),
+)
+async def delete(
+    stock_info_id: str,
+    current_user: JWTUser = Depends(get_current_user),
+):
+    try:
+        deleted_count = await DeleteStockInfoBiz.delete(stock_info_id)
+        if not deleted_count:
+            return Response.failure(msg="未匹配到记录", status=Status.RECORD_NOT_EXIST_ERROR)
+    except Exception as e:
+        g.logger.error(traceback.format_exc())
+        return Response.failure(msg="删除股票信息失败", error=e)
+    return Response.success(data={"stock_info_id": stock_info_id})
