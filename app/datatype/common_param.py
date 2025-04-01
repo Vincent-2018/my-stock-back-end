@@ -91,5 +91,4 @@ class UpdateCommonParamMdl(BaseModel):
     
 
 class DeleteCommonParamMdl(BaseModel):
-    id: str = Field(..., gt=0)
     pass

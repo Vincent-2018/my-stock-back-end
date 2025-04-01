@@ -7,6 +7,7 @@ from app.business.common_param import (
     GetCommonParamListBiz,
     CreateCommonParamMdlBiz,
     UpdateCommonParamBiz,
+    DeleteCommonParamBiz,
 )
 from app.api.status import Status
 from app.initializer import g
@@ -108,23 +109,22 @@ async def update(
     return Response.success(data={"common_param_id": common_param_id})
 
 
-# @common_param_router.delete(
-#     path="/common_param/{common_param_id}",
-#     summary="common_param删除",
-#     responses=response_docs(data={
-#         "id": "str",
-#     }),
-# )
-# async def delete(
-#         user_id: str,
-#         current_user: JWTUser = Depends(get_current_user),
-# ):
-#     try:
-#         user_biz = DeleteUserBiz()
-#         deleted_ids = await user_biz.delete(user_id)
-#         if not deleted_ids:
-#             return Response.failure(msg="未匹配到记录", status=Status.RECORD_NOT_EXIST_ERROR)
-#     except Exception as e:
-#         g.logger.error(traceback.format_exc())
-#         return Response.failure(msg="user删除失败", error=e)
-#     return Response.success(data={"id": user_id})
+@common_param_router.delete(
+    path="/common_param/{common_param_id}",
+    summary="common_param删除",
+    responses=response_docs(data={
+        "common_param_id": "str",
+    }),
+)
+async def delete(
+        common_param_id: str,
+):
+    try:
+        common_param_biz = DeleteCommonParamBiz()
+        deleted_ids = await common_param_biz.delete(common_param_id)
+        if not deleted_ids:
+            return Response.failure(msg="未匹配到记录", status=Status.RECORD_NOT_EXIST_ERROR)
+    except Exception as e:
+        g.logger.error(traceback.format_exc())
+        return Response.failure(msg="user删除失败", error=e)
+    return Response.success(data={"common_param_id": common_param_id})
