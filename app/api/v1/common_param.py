@@ -10,6 +10,7 @@ from app.business.common_param import (
 from app.api.status import Status
 from app.initializer import g
 from app.middleware.auth import JWTUser, get_current_user
+from app.utils.format_utils import format_timestamps
 from loguru import logger
 
 common_param_router = APIRouter()
@@ -30,6 +31,7 @@ async def get(
     try:
         common_param_biz = GetCommonParamBiz(id=common_param_id)
         data = await common_param_biz.get()
+        data = format_timestamps(data)
         if not data:
             return Response.failure(msg="未匹配到记录", status=Status.RECORD_NOT_EXIST_ERROR)
     except Exception as e:
@@ -57,12 +59,13 @@ async def get_list(
     try:
         common_param_biz = GetCommonParamListBiz(page=page, size=size)
         data, total = await common_param_biz.get_list()
+        data = format_timestamps(data)
     except Exception as e:
         g.logger.error(traceback.format_exc())
         return Response.failure(msg="common_param列表失败", error=e)
     return Response.success(data={"items": data, "total": total})
 
-# ------------------------------------
+
 @common_param_router.post(
     path="/common_param",
     summary="common_param创建",

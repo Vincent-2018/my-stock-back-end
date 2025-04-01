@@ -1,6 +1,7 @@
 import re
 from decimal import Decimal
 from pydantic import BaseModel, Field, field_validator, field_serializer
+from toollib.utils import now2timestamp
 from sqlalchemy import Column, String, DECIMAL, BigInteger
 from app.datatype import DeclBase, filter_fields
 from app.initializer import g
@@ -12,6 +13,8 @@ class CommonParam(DeclBase):
     id = Column(BigInteger, primary_key=True, default=g.snow.gen_uid, comment="主键")
     name = Column(String(100), nullable=False, comment="参数名称")
     value = Column(DECIMAL(10, 2), nullable=False, comment="参数值")
+    created_at = Column(BigInteger, default=now2timestamp, comment="创建时间")
+    updated_at = Column(BigInteger, default=now2timestamp, onupdate=now2timestamp, comment="更新时间")
 
 
 class GetCommonParamMdl(BaseModel):
