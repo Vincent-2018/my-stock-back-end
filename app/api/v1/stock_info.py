@@ -21,7 +21,7 @@ _active = True  # 激活(若省略则默认True)
 
 @stock_info_router.get(
     path="/stock_info/{stock_info_id}",
-    summary="stock_info详情",
+    summary="股票信息详情",
     responses=response_docs(
         model=GetStockInfoBiz,
     ),
