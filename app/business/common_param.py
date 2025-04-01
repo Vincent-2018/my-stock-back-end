@@ -3,6 +3,8 @@ from app.datatype.common_param import (
     GetCommonParamMdl,
     GetCommonParamListMdl,
     CreateCommonParamMdl,
+    UpdateCommonParamMdl,
+    DeleteCommonParamMdl,
 )
 from app.initializer import g
 from app.utils import auth, db_async
@@ -52,4 +54,26 @@ class CreateCommonParamMdlBiz(CreateCommonParamMdl):
                     "value": self.value,
                 },
                 filter_by={"name": self.name},
+            )
+
+class UpdateCommonParamBiz(UpdateCommonParamMdl):
+
+    async def update(self, common_param_id: str):
+        async with g.db_async_session() as session:
+            return await db_async.update(
+                session=session,
+                model=CommonParam,
+                data=self.model_dump(),
+                filter_by={"id": common_param_id},
+            )
+
+class DeleteCommonParamBiz(DeleteCommonParamMdl):
+
+    @staticmethod
+    async def delete(common_param_id: str):
+        async with g.db_async_session() as session:
+            return await db_async.delete(
+                session=session,
+                model=CommonParam,
+                filter_by={"id": common_param_id},
             )

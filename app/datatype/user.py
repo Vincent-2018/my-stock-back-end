@@ -1,6 +1,5 @@
 import re
 from typing import Literal
-
 from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import Column, BigInteger, Integer, String
 from toollib.utils import now2timestamp
