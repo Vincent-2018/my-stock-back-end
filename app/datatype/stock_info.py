@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from decimal import Decimal
 from sqlalchemy import Column, String, DECIMAL, BigInteger, DateTime
 from toollib.utils import now2timestamp
 from app.datatype import DeclBase, filter_fields
@@ -41,9 +42,34 @@ class GetStockInfoMdl(BaseModel):
 
 
 class GetStockInfoListMdl(BaseModel):
-    page: int = 1
-    size: int = 10
-
+    page: int = Field(1, ge=1)
+    size: int = Field(10, ge=1)
+    id: str = None
+    type: str = None
+    grant_date: datetime = None
+    available_sell_quantity: int = None
+    stock_option_anchors_price: float = None
+    stock_price: float = None
+    value_usd: float = None
+    value_cny: float = None
+    created_at: int = None
+    updated_at: int = None
     @classmethod
     def response_fields(cls):
-        return GetStockInfoMdl.response_fields()
+        return filter_fields(
+            cls,
+            exclude=[
+                "page",
+                "size",
+            ]
+        )
+
+
+class CreateStockInfoMdl(BaseModel):
+    type: str | None = Field(None)
+    grant_date: datetime | None = Field(None)
+    available_sell_quantity: int | None = Field(None)
+    stock_option_anchors_price: Decimal | None = Field(None)
+    stock_price: Decimal | None = Field(None)
+    value_usd: Decimal | None = Field(None)
+    value_cny: Decimal | None = Field(None)

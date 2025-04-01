@@ -2,6 +2,7 @@ from app.datatype.stock_info import (
     StockInfo,
     GetStockInfoMdl,
     GetStockInfoListMdl,
+    CreateStockInfoMdl,
 )
 from app.initializer import g
 from app.utils import auth, db_async
@@ -42,3 +43,22 @@ class GetStockInfoListBiz(GetStockInfoListMdl):
                 items = [jsonable_encoder(item) for item in data]
                 return items, total
             return [], 0
+
+
+class CreateStockInfoBiz(CreateStockInfoMdl):
+
+    async def create(self):
+        async with g.db_async_session() as session:
+            return await db_async.create(
+                session=session,
+                model=StockInfo,
+                data={
+                    "type": self.type,
+                    "grant_date": self.grant_date,
+                    "available_sell_quantity": self.available_sell_quantity,
+                    "stock_option_anchors_price": self.stock_option_anchors_price,
+                    "stock_price": self.stock_price,
+                    "value_usd": self.value_usd,
+                    "value_cny": self.value_cny,
+                }
+            )

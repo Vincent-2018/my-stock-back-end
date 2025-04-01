@@ -6,6 +6,7 @@ from app.api.response import Response, response_docs
 from app.business.stock_info import (
     GetStockInfoBiz,
     GetStockInfoListBiz,
+    CreateStockInfoBiz,
 )
 from app.api.status import Status
 from app.initializer import g
@@ -63,3 +64,21 @@ async def get_list(
         g.logger.error(traceback.format_exc())
         return Response.failure(msg="获取股票信息列表失败", error=e)
     return Response.success(data={"items": data, "total": total})
+
+@stock_info_router.post(
+    path="/stock_info",
+    summary="创建股票信息",
+    responses=response_docs(model=CreateStockInfoBiz),
+)
+async def create(
+    stock_info: CreateStockInfoBiz,
+    current_user: JWTUser = Depends(get_current_user),
+):
+    try:
+        data = await stock_info.create()
+        if not data:
+            return Response.failure(msg="创建股票信息失败")
+    except Exception as e:
+        g.logger.error(traceback.format_exc())
+        return Response.failure(msg="创建股票信息失败", error=e)
+    return Response.success(data=data)
