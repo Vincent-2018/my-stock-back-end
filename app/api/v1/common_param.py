@@ -5,7 +5,8 @@ from app.api.response import Response, response_docs
 from app.business.common_param import (
     GetCommonParamBiz,
     GetCommonParamListBiz,
-    CreateCommonParamMdlBiz
+    CreateCommonParamMdlBiz,
+    UpdateCommonParamBiz,
 )
 from app.api.status import Status
 from app.initializer import g
@@ -25,7 +26,7 @@ _active = True  # 激活(若省略则默认True)
     ),
 )
 async def get(
-        common_param_id: int,
+        common_param_id: str,
         current_user: JWTUser = Depends(get_current_user),  # 认证
 ):
     try:
@@ -70,7 +71,7 @@ async def get_list(
     path="/common_param",
     summary="common_param创建",
     responses=response_docs(data={
-        "id": "int",
+        "id": "str",
     }),
 )
 async def create(
@@ -84,3 +85,46 @@ async def create(
         g.logger.error(traceback.format_exc())
         return Response.failure(msg="common_param创建失败", error=e)
     return Response.success(data={"id": common_param_id})
+
+
+@common_param_router.put(
+    path="/common_param/{common_param_id}",
+    summary="common_param更新",
+    responses=response_docs(data={
+        "id": "str",
+    }),
+)
+async def update(
+        common_param_id: str,
+        common_param_biz: UpdateCommonParamBiz,
+):
+    try:
+        updated_ids = await common_param_biz.update(common_param_id)
+        if not updated_ids:
+            return Response.failure(msg="未匹配到记录", status=Status.RECORD_NOT_EXIST_ERROR)
+    except Exception as e:
+        g.logger.error(traceback.format_exc())
+        return Response.failure(msg="user更新失败", error=e)
+    return Response.success(data={"common_param_id": common_param_id})
+
+
+# @common_param_router.delete(
+#     path="/common_param/{common_param_id}",
+#     summary="common_param删除",
+#     responses=response_docs(data={
+#         "id": "str",
+#     }),
+# )
+# async def delete(
+#         user_id: str,
+#         current_user: JWTUser = Depends(get_current_user),
+# ):
+#     try:
+#         user_biz = DeleteUserBiz()
+#         deleted_ids = await user_biz.delete(user_id)
+#         if not deleted_ids:
+#             return Response.failure(msg="未匹配到记录", status=Status.RECORD_NOT_EXIST_ERROR)
+#     except Exception as e:
+#         g.logger.error(traceback.format_exc())
+#         return Response.failure(msg="user删除失败", error=e)
+#     return Response.success(data={"id": user_id})
