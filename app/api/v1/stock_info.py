@@ -69,6 +69,30 @@ async def get_list(
 
 
 @stock_info_router.post(
+    path="/stock_info/search",
+    summary="筛选查询股票信息列表",
+    responses=response_docs(
+        model=GetStockInfoListBiz,
+        is_listwrap=True,
+        listwrap_key="items",
+        listwrap_key_extra={
+            "total": "int",
+        },
+    ),
+)
+async def post_list(
+    stock_info: GetStockInfoListBiz,
+    current_user: JWTUser = Depends(get_current_user),
+):
+    try:
+        data, total = await stock_info.post_list()
+    except Exception as e:
+        g.logger.error(traceback.format_exc())
+        return Response.failure(msg="筛选查询股票信息列表失败", error=e)
+    return Response.success(data={"items": data, "total": total})
+
+
+@stock_info_router.post(
     path="/stock_info",
     summary="创建股票信息",
     responses=response_docs(model=CreateStockInfoBiz),

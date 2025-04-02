@@ -45,6 +45,36 @@ class GetStockInfoListBiz(GetStockInfoListMdl):
                 return items, total
             return [], 0
 
+    async def post_list(self):
+        async with g.db_async_session() as session:
+            # 构建过滤条件
+            filter_by = {}
+            for field in self.response_fields():
+                value = getattr(self, field)
+                if value is not None:
+                    filter_by[field] = value
+
+            # 查询数据
+            data = await db_async.query_all(
+                session=session,
+                model=StockInfo,
+                fields=self.response_fields(),
+                filter_by=filter_by,
+                page=self.page,
+                size=self.size,
+            )
+            total = await db_async.query_total(
+                session=session,
+                model=StockInfo,
+                filter_by=filter_by
+            )
+
+            if data:
+                # 处理datetime等特殊类型
+                items = [jsonable_encoder(item) for item in data]
+                return items, total
+            return [], 0
+
 
 class CreateStockInfoBiz(CreateStockInfoMdl):
 
