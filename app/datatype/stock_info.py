@@ -42,18 +42,21 @@ class GetStockInfoMdl(BaseModel):
 
 
 class GetStockInfoListMdl(BaseModel):
-    page: int = Field(1, ge=1)
-    size: int = Field(10, ge=1)
-    id: str = None
-    type: str = None
-    grant_date: datetime = None
-    available_sell_quantity: int = None
-    stock_option_anchors_price: float = None
-    stock_price: float = None
-    value_usd: float = None
-    value_cny: float = None
-    created_at: int = None
-    updated_at: int = None
+    # 分页参数
+    page: int = Field(default=1, description="页码")
+    size: int = Field(default=10, description="每页数量")
+
+    # 搜索参数，全部设为可选
+    id: str | None = Field(default=None, description="股票信息id")
+    type: str | None = Field(default=None, description="股票类型")
+    grant_date: datetime | None = Field(default=None, description="授予日期")
+    available_sell_quantity: int | None = Field(default=None, description="可售数量")
+    stock_option_anchors_price: float | None = Field(default=None, description="期权锚定价")
+    stock_price: float | None = Field(default=None, description="股票价格")
+    value_usd: float | None = Field(default=None, description="美元价值")
+    value_cny: float | None = Field(default=None, description="人民币价值")
+    created_at: int | None = Field(default=None, description="创建时间")
+    updated_at: int | None = Field(default=None, description="更新时间")
     @classmethod
     def response_fields(cls):
         return filter_fields(
@@ -63,6 +66,7 @@ class GetStockInfoListMdl(BaseModel):
                 "size",
             ]
         )
+
 
 
 class CreateStockInfoMdl(BaseModel):
